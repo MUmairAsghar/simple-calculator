@@ -157,41 +157,6 @@ class CalculatorApp:
 				button = tk.Button(keys, text=label, command=command, font=("Segoe UI", 11, "bold"), fg=fg, bg=bg, activeforeground=self.COLORS["text"], activebackground=self.COLORS["key_hover"], relief="flat", bd=0, highlightthickness=0)
 				button.grid(row=row_index, column=column_index, sticky="nsew", padx=4, pady=4, ipadx=3, ipady=9)
 
-	def _bind_keys(self):
-		self.root.bind("<Return>", lambda _: self._equals())
-		self.root.bind("<KP_Enter>", lambda _: self._equals())
-		self.root.bind("<Escape>", lambda _: self._clear())
-		self.root.bind("<Key>", self._key_input)
-
-	def _key_input(self, event):
-		if event.char in "0123456789.+-*/%^()":
-			self._insert(event.char)
-			return "break"
-
-	def _insert(self, value):
-		self.expression.set(self.expression.get() + value)
-		self.status.set("Editing expression")
-
-	def _clear(self):
-		self.expression.set("")
-		self.result.set("0")
-		self.status.set("Ready")
-
-	def _delete(self):
-		self.expression.set(self.expression.get()[:-1])
-
-	def _equals(self):
-		expression = self.expression.get().strip()
-		if not expression:
-			return
-		try:
-			self.evaluator.angle_mode = self.angle_mode.get()
-			value = self.evaluator.evaluate(expression, self.answer)
-			if not math.isfinite(value):
-				raise ValueError("Result is not finite")
-			self.answer = value
-			formatted = self._format(value)
-			self.result.set(formatted)
 			self.status.set(f"{self.angle_mode.get()}  |  Calculated")
 			self.history.insert(0, (expression, formatted))
 			self.history_list.insert(0, f"{expression} = {formatted}")
