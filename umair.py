@@ -12,32 +12,7 @@ class SafeEvaluator:
 
 	def _angle(self, value):
 		return math.radians(value) if self.angle_mode == "DEG" else value
-
-	def _from_angle(self, value):
-		result = math.degrees(value) if self.angle_mode == "DEG" else value
-		return result
-
-	def evaluate(self, expression, answer=0.0):
-		expression = expression.replace("^", "**").replace("pi", "PI")
-		tree = ast.parse(expression, mode="eval")
-		return self._visit(tree.body, answer)
-
-	def _visit(self, node, answer):
-		if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
-			return node.value
-		if isinstance(node, ast.Name):
-			constants = {"PI": math.pi, "E": math.e, "e": math.e, "Ans": answer}
-			if node.id in constants:
-				return constants[node.id]
-			raise ValueError("Unknown symbol")
-		if isinstance(node, ast.UnaryOp) and type(node.op) in (ast.USub, ast.UAdd):
-			value = self._visit(node.operand, answer)
-			return -value if isinstance(node.op, ast.USub) else value
-		if isinstance(node, ast.BinOp) and type(node.op) in OPERATOR_MAP:
-			left = self._visit(node.left, answer)
-			right = self._visit(node.right, answer)
-			return OPERATOR_MAP[type(node.op)](left, right)
-		if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+ame):
 			name = node.func.id
 			if name not in self._functions():
 				raise ValueError("Unknown function")
@@ -77,19 +52,32 @@ OPERATOR_MAP = {
 
 class CalculatorApp:
 	COLORS = {
-		"bg": "#11151c",
-		"panel": "#191f29",
-		"display": "#0b0e13",
-		"text": "#f4f7fb",
-		"muted": "#8f9bad",
-		"key": "#242c38",
-		"key_hover": "#303b4b",
-		"operator": "#294961",
-		"accent": "#54d6b1",
-		"danger": "#ff7d87",
-		"border": "#303948",
-	}
+		"bg
+	def _from_angle(self, value):
+		result = math.degrees(value) if self.angle_mode == "DEG" else value
+		return result
 
+	def evaluate(self, expression, answer=0.0):
+		expression = expression.replace("^", "**").replace("pi", "PI")
+		tree = ast.parse(expression, mode="eval")
+		return self._visit(tree.body, answer)
+
+	def _visit(self, node, answer):
+		if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+			return node.value
+		if isinstance(node, ast.Name):
+			constants = {"PI": math.pi, "E": math.e, "e": math.e, "Ans": answer}
+			if node.id in constants:
+				return constants[node.id]
+			raise ValueError("Unknown symbol")
+		if isinstance(node, ast.UnaryOp) and type(node.op) in (ast.USub, ast.UAdd):
+			value = self._visit(node.operand, answer)
+			return -value if isinstance(node.op, ast.USub) else value
+		if isinstance(node, ast.BinOp) and type(node.op) in OPERATOR_MAP:
+			left = self._visit(node.left, answer)
+			right = self._visit(node.right, answer)
+			return OPERATOR_MAP[type(node.op)](left, right)
+		if isinstance(node, ast.Call) and isinstance(node.func, ast.N
 	def __init__(self, root):
 		self.root = root
 		self.root.title("Axiom | Scientific Calculator")
